@@ -43,30 +43,6 @@ paths:
             type: 'object'
         400:
           description: 'Bad Request'
-  /payments/pay:
-    put:
-      tags:
-        - 'payments'
-      summary: 'Payout ready to pay payments'
-      consumes:
-        - 'application/json'
-      parameters:
-        - in: 'body'
-          name: 'Payout'
-          schema:
-            type: 'object'
-            required:
-              - "shop_id"
-            properties:
-              shop_id:
-                type: 'number'
-                minimum: 1
-      responses:
-        200:
-          description: 'Payout details'
-          schema:
-            '$ref': '#/definitions/Payout'
-            type: 'object'
   /payments/process:
     get:
       tags:
@@ -109,7 +85,6 @@ paths:
             type: 'object'
         400:
           description: 'Bad Request'
-
   /payments/complete:
     get:
       tags:
@@ -151,7 +126,50 @@ paths:
             type: 'object'
         400:
           description: 'Bad Request'
-
+  /payments/pay:
+    put:
+      tags:
+        - 'payments'
+      summary: 'Payout ready to pay payments'
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'Payout'
+          schema:
+            type: 'object'
+            required:
+              - "shop_id"
+            properties:
+              shop_id:
+                type: 'number'
+                minimum: 1
+      responses:
+        200:
+          description: 'Payout details'
+          schema:
+            '$ref': '#/definitions/Payout'
+            type: 'object'
+  /payments/{id}/history:
+    get:
+      tags:
+        - 'payments'
+      summary: 'Get payment update history'
+      parameters:
+        - name: 'id'
+          in: 'path'
+          description: 'Payment Id'
+          required: 'true'
+          type: 'string'
+          minimum: 1
+      responses:
+        200:
+          description: 'Payment update history'
+          schema:
+            '$ref': '#/definitions/PaymentHistory'
+            type: 'object'
+      produces:
+        - 'application/json'
   /shops:
     post:
       tags:
@@ -242,6 +260,28 @@ paths:
         '403':
           description: 'You do not have necessary permissions for the resource'
 definitions:
+  PaymentHistory:
+    type: 'array'
+    items:
+      type: 'object'
+      properties:
+        created_at:
+          type: 'string'
+          format: 'datetime'
+        state:
+          type: 'string'
+        commission_a:
+          type: 'number'
+        commission_b:
+          type: 'number'
+        commission_c:
+          type: 'number'
+        commission_d:
+          type: 'number'
+        amount:
+          type: 'number'
+        payout:
+          type: 'number'
   Payout:
     type: 'object'
     properties:

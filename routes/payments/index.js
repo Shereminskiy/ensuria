@@ -5,10 +5,11 @@ import debug from 'debug';
 import SettingsRepository from '../../database/repositories/Settings.js';
 import ShopRepository from '../../database/repositories/Shop.js';
 import PaymentRepository from '../../database/repositories/Payment.js';
+import PaymentHistoryRepository from '../../database/repositories/PaymentHistory.js';
 import DepositService from './services/Deposite.js';
 import { PAYMENT_STATE, PRECISION } from '../../constants.js';
 import { getCommissionAmount } from './services/Commission.js';
-import { PayoutListDto, PendingListDto, ProcessListDto } from './dto/index.js';
+import { PaymentHistoryListDto, PayoutListDto, PendingListDto, ProcessListDto } from './dto/index.js';
 
 const PaymentsRouter = Router();
 
@@ -139,6 +140,16 @@ PaymentsRouter.put('/pay', swaggerValidation.validate, async (req, res, next) =>
     await PaymentRepository.performPayment(shop_id, payments);
 
     return res.json(PayoutListDto.populate(payments));
+  } catch (error) {
+    next(error);
+  }
+});
+
+PaymentsRouter.get('/:id/history', swaggerValidation.validate, async (req, res, next) => {
+  try {
+    const history = await PaymentHistoryRepository.findAllBy({ payment_id: req.params.id });
+
+    return res.json(PaymentHistoryListDto.populate(history));
   } catch (error) {
     next(error);
   }
