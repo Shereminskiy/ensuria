@@ -5,9 +5,8 @@ Running the Express locally requires a few steps.
 1. Copy the `.env.example` to `.env` and make the necessary updates (auth0)
 2. Run the Docker Command `docker-compose up`
 3. Run migrations `knex migrate:latest`
-3. Run `npm run start-dev`
-4. Open swagger page `http://localhost:8082/api-docs/`
-
+4. Run `npm run start-dev`
+5. Open swagger page `http://localhost:8082/api-docs/`
 
 ### create migration
 
