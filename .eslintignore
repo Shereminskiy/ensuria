@@ -1,0 +1,8 @@
+node_modules/**
+restore_databases.sh
+*.yml
+.db-data/**
+.ebextensions/*
+.husky/**
+certs/*
+

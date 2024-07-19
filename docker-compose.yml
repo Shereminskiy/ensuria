@@ -1,0 +1,15 @@
+version: '3.5'
+services:
+  postgres:
+    container_name: ensuria-postgres
+    env_file: ${ENV_FILE}
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: '/data/postgres'
+    volumes:
+      - './.pg-data:/data/postgres'
+    ports:
+      - '5432:5432'

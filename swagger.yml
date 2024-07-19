@@ -1,0 +1,344 @@
+swagger: '2.0'
+info:
+  title: 'Ensuria Payment Gateway'
+  description: 'Ensuria Payment Gateway API server definition.'
+  version: '1.0.0'
+schemes:
+  - 'http'
+tags:
+  - name: 'settings'
+    description: 'Project settings'
+  - name: 'shop'
+    description: 'Shop'
+  - name: 'payments'
+    description: 'Payments'
+paths:
+  /payments:
+    post:
+      tags:
+        - 'payments'
+      summary: 'Create a new payments to the shop'
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          description: 'Payment details'
+          name: 'Payment'
+          schema:
+            type: 'object'
+            required:
+              - shop_id
+              - amount
+            properties:
+              shop_id:
+                type: 'number'
+              amount:
+                type: 'number'
+                minimum: 1
+      responses:
+        200:
+          description: 'Payment details'
+          schema:
+            '$ref': '#/definitions/PaymentId'
+            type: 'object'
+        400:
+          description: 'Bad Request'
+  /payments/pay:
+    put:
+      tags:
+        - 'payments'
+      summary: 'Payout ready to pay payments'
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'Payout'
+          schema:
+            type: 'object'
+            required:
+              - "shop_id"
+            properties:
+              shop_id:
+                type: 'number'
+                minimum: 1
+      responses:
+        200:
+          description: 'Payout details'
+          schema:
+            '$ref': '#/definitions/Payout'
+            type: 'object'
+  /payments/process:
+    get:
+      tags:
+        - 'payments'
+      summary: 'Processed payments list'
+      responses:
+        200:
+          description: 'Payment processing list'
+          schema:
+            '$ref': '#/definitions/PaymentProcessedList'
+            type: 'object'
+      consumes:
+        - 'application/json'
+    put:
+      tags:
+        - 'payments'
+      summary: 'Processed payments '
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          description: 'Processed payments'
+          name: 'Processed'
+          schema:
+            type: 'object'
+            required:
+              - "payment_ids"
+            properties:
+              payment_ids:
+                type: 'array'
+                minItems: 1
+                items:
+                  type: 'number'
+                  minimum: 1
+      responses:
+        200:
+          description: 'Payment processing'
+          schema:
+            '$ref': '#/definitions/PaymentProcessed'
+            type: 'object'
+        400:
+          description: 'Bad Request'
+
+  /payments/complete:
+    get:
+      tags:
+        - 'payments'
+      summary: 'Get payment list for completion'
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: 'Payment list'
+          schema:
+            '$ref': '#/definitions/PaymentCompletionList'
+    put:
+      tags:
+        - 'payments'
+      summary: 'Complete payments and unblock deposit'
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          description: 'Complete payments'
+          name: 'Complete'
+          schema:
+            type: 'object'
+            required:
+              - payment_ids
+            properties:
+              payment_ids:
+                type: 'array'
+                minItems: 1
+                items:
+                  type: 'number'
+                  minimum: 1
+      responses:
+        200:
+          description: 'Payment processing'
+          schema:
+            '$ref': '#/definitions/PaymentProcessed'
+            type: 'object'
+        400:
+          description: 'Bad Request'
+
+  /shops:
+    post:
+      tags:
+        - 'shop'
+      summary: 'Create a new shop'
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          description: 'Create a new shop'
+          name: 'Shop'
+          schema:
+            type: 'object'
+            required:
+              - name
+              - commission_c
+            properties:
+              name:
+                type: 'string'
+                minLength: 2
+                maxLength: 32
+              commission_c:
+                type: 'number'
+                minimum: 0
+                maximum: 25
+      responses:
+        200:
+          description: 'Shop id'
+          schema:
+            '$ref': '#/definitions/ShopId'
+            type: 'object'
+        400:
+          description: 'Bad Request'
+    get:
+      tags:
+        - 'shop'
+      summary: 'Get shop list'
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: 'Shop list'
+          schema:
+            '$ref': '#/definitions/ShopList'
+  /settings:
+    put:
+      tags:
+        - 'settings'
+      summary: 'Update setting values'
+      consumes:
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          description: 'Settings to update'
+          name: 'Settings'
+          schema:
+            type: 'object'
+            required:
+              - commission_a
+              - commission_b
+              - commission_d
+            properties:
+              commission_a:
+                type: 'number'
+              commission_b:
+                type: 'number'
+              commission_d:
+                type: 'number'
+      responses:
+        200:
+          description: 'Settings to update'
+          schema:
+            '$ref': '#/definitions/SettingList'
+            type: 'object'
+        400:
+          description: 'Bad Request'
+    get:
+      tags:
+        - 'settings'
+      summary: 'Returns settings list'
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: 'Setting list'
+          schema:
+            '$ref': '#/definitions/SettingList'
+        '403':
+          description: 'You do not have necessary permissions for the resource'
+definitions:
+  Payout:
+    type: 'object'
+    properties:
+      total_amount:
+        type: 'number'
+      payments:
+        type: 'object'
+        properties:
+          id:
+            type: 'number'
+          amount:
+            type: 'number'
+  PaymentProcessedList:
+    type: 'array'
+    items:
+      type: 'object'
+      properties:
+        id:
+          type: 'number'
+  PaymentCompletion:
+    type: 'object'
+    properties:
+      id:
+        type: 'number'
+      commission_d:
+        type: 'number'
+        description: 'Blocked sum of the payment'
+      payout:
+        type: 'number'
+        description: 'total sum for payment'
+      amount:
+        type: 'number'
+        description: 'Income payment amount'
+      shop:
+        type: 'object'
+        properties:
+          id:
+            type: 'number'
+            description: 'Shop id'
+          name:
+            type: 'string'
+            description: 'Shop name'
+  PaymentCompletionList:
+    type: 'array'
+    items:
+      '$ref': '#/definitions/PaymentCompletion'
+  PaymentProcessed:
+    type: 'object'
+    properties:
+      success:
+        type: 'array'
+        items:
+          type: 'number'
+      failed:
+        type: 'array'
+        items:
+          type: 'number'
+  ShopList:
+    type: 'array'
+    items:
+      '$ref': '#/definitions/Shop'
+  Shop:
+    type: 'object'
+    properties:
+      id:
+        type: 'number'
+      name:
+        type: 'string'
+        example: 'Comfy'
+      balance:
+        type: 'number'
+        example: '5'
+      commission_c:
+        type: 'number'
+        example: 0
+  PaymentId:
+    type: 'object'
+    properties:
+      id:
+        type: 'number'
+  ShopId:
+    type: 'object'
+    properties:
+      id:
+        type: 'number'
+  SettingList:
+    type: 'array'
+    items:
+      '$ref': '#/definitions/Setting'
+  Setting:
+    type: 'object'
+    properties:
+      id:
+        type: 'number'
+      name:
+        type: 'string'
+        example: 'commission_a'
+      value:
+        type: 'number'
+        example: '5'
