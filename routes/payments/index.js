@@ -8,7 +8,7 @@ import PaymentRepository from '../../database/repositories/Payment.js';
 import DepositService from './services/Deposite.js';
 import { PAYMENT_STATE, PRECISION } from '../../constants.js';
 import { getCommissionAmount } from './services/Commission.js';
-import { ProcessListDto, PendingListDto, PayoutListDto } from './dto/index.js';
+import { PayoutListDto, PendingListDto, ProcessListDto } from './dto/index.js';
 
 const PaymentsRouter = Router();
 
@@ -136,7 +136,7 @@ PaymentsRouter.put('/pay', swaggerValidation.validate, async (req, res, next) =>
   try {
     const { shop_id } = req.body;
     const payments = await PaymentRepository.findAllReadyToPayByShopId(shop_id);
-    // await PaymentRepository.performPayment(shop_id, payments);
+    await PaymentRepository.performPayment(shop_id, payments);
 
     return res.json(PayoutListDto.populate(payments));
   } catch (error) {
