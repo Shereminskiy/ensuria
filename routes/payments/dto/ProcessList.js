@@ -5,7 +5,7 @@ class ProcessListDto {
    * @returns {Array<Object<id: number>>}
    */
   static populate(payments) {
-    return payments.map(({ id }) => ({ id}));
+    return payments.map(({ id }) => ({ id }));
   }
 }
 

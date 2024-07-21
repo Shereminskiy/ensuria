@@ -10,15 +10,15 @@ class Payments extends Model {
   }
 
   async $afterUpdate(opt, queryContext) {
-    await super.$afterUpdate( opt, queryContext);
-    const { old} = opt;
+    await super.$afterUpdate(opt, queryContext);
+    const { old } = opt;
 
     await PaymentHistory.query().insert({
       payment_id: old.id,
-      metadata: old
-    })
-
+      metadata: old,
+    });
   }
+
   static get relationMappings() {
     return {
       shop: {

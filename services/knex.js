@@ -1,7 +1,13 @@
-import knex from 'knex';
+import Knex from 'knex';
 import { Model } from 'objection';
 import knexConfig from '../knexfile.js';
 
-Model.knex(knex(knexConfig));
+const environment = process.env.NODE_ENV || 'development';
 
-export default knex;
+console.log(`Working environments : ${environment}`);
+const config = knexConfig[environment];
+
+const knex = Knex(config);
+Model.knex(knex);
+
+export default { knex, config };

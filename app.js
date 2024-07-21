@@ -9,10 +9,12 @@ import jsyaml from 'js-yaml';
 import swaggerUi from 'swagger-ui-express';
 import swaggerValidation from 'openapi-validator-middleware';
 import { ForbiddenError } from '@casl/ability';
-
+import knex from './services/knex.js';
 import SettingsRouter from './routes/settings/index.js';
 import ShopRouter from './routes/shops/index.js';
 import PaymentsRouter from './routes/payments/index.js';
+
+console.log(`Connected to DB: ${JSON.stringify(knex.config.connection)}`);
 
 const spec = fs.readFileSync('swagger.yml', 'utf8');
 const swaggerDocument = jsyaml.load(spec);
@@ -46,8 +48,6 @@ app.use((err, req, res, next) => {
     return res.status(400).json(err);
   }
 
-  console.log('Errror');
-
   if (err.name === 'UnauthorizedError') {
     return res.status(401).json({ message: err.message });
   }
@@ -57,7 +57,6 @@ app.use((err, req, res, next) => {
       message: 'Access forbidden',
     });
   }
-  console.log('WWWWWW1');
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -65,8 +64,6 @@ app.use((err, req, res, next) => {
   // render the error page
   res.status(err.status || 500);
   res.json(err.message);
-  console.error(err);
-  console.log('WWWWWW');
 });
 
 export default app;
